@@ -1,0 +1,28 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+        name:
+                twitter-graph
+        labels:
+                app: twittergraph
+spec:
+        concurrencyPolicy: Replace
+        failedJobsHistoryLimit: 3
+        jobTemplate:
+                metadata:
+                spec:
+                        template:
+                                metadata:
+                                spec:
+                                        containers:
+                                        - name: twittergraph
+                                          image: docker.io/clcollins/twittergraph:1.0
+                                          imagePullPolicy: Always
+                                          envFrom:
+                                          - secretRef:
+                                                  name: twitter-creds
+                                          - secretRef:
+                                                  name: influxdb-creds
+                                        restartPolicy: Never
+        schedule: '*/3 * * * *'
+        successfulJobsHistoryLimit: 3
